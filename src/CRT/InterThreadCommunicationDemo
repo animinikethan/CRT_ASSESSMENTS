@@ -1,0 +1,110 @@
+package CRT;
+
+class Restaurant {
+
+    private String order;
+    private boolean orderPlaced = false;
+    private boolean foodCooked = false;
+
+    // 1️⃣ Waiter places the order
+    synchronized void foodOrder(String orderName) {
+        order = orderName;
+        System.out.println("Waiter: Chef has received the order -> " + order);
+
+        orderPlaced = true;
+        notifyAll();   // Notify cook
+    }
+
+    // 2️⃣ Cook prepares the food
+    synchronized void cookedOrder(String orderName) {
+        while (!orderPlaced) {
+            try {
+                wait();   // Wait until order is placed
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Cook: Cooking is under process for -> " + orderName);
+
+        foodCooked = true;
+        notifyAll();   // Notify customer
+    }
+
+    // 3️⃣ Customer receives the food
+    synchronized void receivedOrder(String orderName) {
+        while (!foodCooked) {
+            try {
+                wait();   // Wait until food is cooked
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Customer: Received the order -> " + orderName);
+    }
+}
+
+// ---------------- THREAD CLASSES ----------------
+
+class Waiter extends Thread {
+    Restaurant r;
+    String order;
+
+    Waiter(Restaurant r, String order) {
+        this.r = r;
+        this.order = order;
+        setName("Waiter");
+    }
+
+    public void run() {
+        r.foodOrder(order);
+    }
+}
+
+class Cook extends Thread {
+    Restaurant r;
+    String order;
+
+    Cook(Restaurant r, String order) {
+        this.r = r;
+        this.order = order;
+        setName("Cook");
+    }
+
+    public void run() {
+        r.cookedOrder(order);
+    }
+}
+
+class Customer extends Thread {
+    Restaurant r;
+    String order;
+
+    Customer(Restaurant r, String order) {
+        this.r = r;
+        this.order = order;
+        setName("Customer");
+    }
+
+    public void run() {
+        r.receivedOrder(order);
+    }
+}
+public class InterThreadCommunicationDemo {
+
+    public static void main(String[] args) {
+
+        Restaurant r = new Restaurant();
+        String orderName = "Veg Biryani";
+
+        Customer customer = new Customer(r, orderName);
+        Cook cook = new Cook(r, orderName);
+        Waiter waiter = new Waiter(r, orderName);
+
+        // Start all threads
+        customer.start();
+        cook.start();
+        waiter.start();
+    }
+}
