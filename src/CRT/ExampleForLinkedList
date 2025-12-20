@@ -1,0 +1,42 @@
+package CRT;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class ExampleForLinkedList {
+
+    public static void main(String[] args) {
+
+        // Using List reference
+        List l = new LinkedList();
+        l.add("java");
+        l.add(10);
+        l.add(10.9);
+        l.add(23);
+        l.add(null);
+
+        System.out.println("List: " + l);
+
+        for (Object i : l) {
+            System.out.println(i);
+        }
+
+        System.out.println("First element: " + l.get(0));
+        System.out.println("Is Empty: " + l.isEmpty());
+
+        System.out.println("--------------------");
+
+        // Using LinkedList directly
+        LinkedList l1 = new LinkedList();
+        l1.add(10);
+        l1.add(20);
+        l1.add("python");
+        l1.add("red");
+
+        System.out.println("LinkedList: " + l1);
+
+        for (Object i : l1) {
+            System.out.println(i);
+        }
+    }
+}
